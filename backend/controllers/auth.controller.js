@@ -8,7 +8,7 @@ dotenv.config()
 
 const generateTokens = (userId) => {
     const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "1d",
+        expiresIn: "15m",
     });
 
     const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
@@ -27,7 +27,7 @@ const setCookies = (res, accessToken, refreshToken) => {
         httpOnly: true, // prevent XSS attacks, cross site scripting attack
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict", // prevents CSRF attack, cross-site request forgery attack
-        maxAge: 1 * 24 * 60 * 60 * 1000, // 15 minutes
+        maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
     res.cookie("refreshToken", refreshToken, {
@@ -39,6 +39,7 @@ const setCookies = (res, accessToken, refreshToken) => {
 };
 
 
+// ok done
 export const loginController = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -77,6 +78,7 @@ export const loginController = async (req, res) => {
 
 }
 
+// ok done
 export const signupController = async (req, res) => {
     const { name, email, password } = req.body;
 
@@ -112,7 +114,7 @@ export const signupController = async (req, res) => {
 // ok done
 export const logoutController = async (req, res) => {
     try {
-        
+
         const refreshToken = req.cookies.refreshToken;
         
         if (refreshToken) {
@@ -165,6 +167,7 @@ export const refreshToken = async (req, res) => {
     }
 };
 
+// ok done
 export const getProfile = async (req, res) => {
     try {
         res.json(req.user);
