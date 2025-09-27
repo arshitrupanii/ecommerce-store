@@ -4,8 +4,28 @@ import Signuppage from "./pages/Signuppage.jsx";
 import Loginpage from "./pages/Loginpage.jsx";
 import Navbar from "./components/Navbar.jsx";
 import { Toaster } from "react-hot-toast";
+import { useUserStore } from "./stores/useUsersStore.js";
+import { useEffect } from "react";
+import LoadingSpinner from "./components/LoadingSpinner.jsx"
 
 function App() {
+	const { user, checkAuth, checkingAuth } = useUserStore();
+	// const { getCartItems } = useCartStore();
+
+  console.log(user);
+
+	useEffect(() => {
+		checkAuth();
+	}, [checkAuth]);
+
+  // useEffect(() => {
+	// 	if (!user) return;
+
+	// 	getCartItems();
+	// }, [getCartItems, user]);
+
+  if (checkingAuth) return <LoadingSpinner />;
+
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
       {/* Background gradient */}
