@@ -1,9 +1,17 @@
-import React from 'react'
+import React from "react";
 
 const Homepage = () => {
-  return (
-    <div>Homepage</div>
-  )
-}
+  const categories = [
+    { href: "/jeans", name: "Jeans", imageUrl: "/jeans.jpg" },
+    { href: "/t-shirts", name: "T-shirts", imageUrl: "/tshirts.jpg" },
+    { href: "/shoes", name: "Shoes", imageUrl: "/shoes.jpg" },
+    { href: "/glasses", name: "Glasses", imageUrl: "/glasses.png" },
+    { href: "/jackets", name: "Jackets", imageUrl: "/jackets.jpg" },
+    { href: "/suits", name: "Suits", imageUrl: "/suits.jpg" },
+    { href: "/bags", name: "Bags", imageUrl: "/bags.jpg" },
+  ];
 
-export default Homepage
+  return <div></div>;
+};
+
+export default Homepage;
