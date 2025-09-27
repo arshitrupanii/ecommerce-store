@@ -19,7 +19,7 @@ const generateTokens = (userId) => {
 };
 
 const storeRefreshToken = async (userId, refreshToken) => {
-    await redis.set(`refresh_token:${userId}`, refreshToken, { ex : 7 * 24 * 60 * 60 }); // 7days
+    await redis.set(`refresh_token:${userId}`, refreshToken, { ex: 7 * 24 * 60 * 60 }); // 7days
 };
 
 const setCookies = (res, accessToken, refreshToken) => {
@@ -46,12 +46,15 @@ export const loginController = async (req, res) => {
 
         if (!email || !password) {
             return res.status(400).json({
-                success: false,
                 message: "email and Password are required"
             });
         }
 
         const user = await User.findOne({ email });
+
+        if(!user){
+            res.status(400).json({ message: "Invalid email Address" });
+        }
 
         if (user && (await user.comparePassword(password))) {
             const { accessToken, refreshToken } = generateTokens(user._id);
@@ -66,7 +69,6 @@ export const loginController = async (req, res) => {
             });
 
         }
-
         else {
             res.status(400).json({ message: "Invalid email or password" });
         }
@@ -90,7 +92,6 @@ export const signupController = async (req, res) => {
     }
 
     const existingUser = await User.findOne({ email });
-
 
     if (existingUser) {
         return res.status(400).json({ message: "user is already create..." })
@@ -116,7 +117,7 @@ export const logoutController = async (req, res) => {
     try {
 
         const refreshToken = req.cookies.refreshToken;
-        
+
         if (refreshToken) {
             const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
             await redis.del(`refresh_token:${decoded.userId}`)
