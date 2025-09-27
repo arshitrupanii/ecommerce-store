@@ -8,6 +8,7 @@ import productRouter from "./routes/product.routes.js"
 import cartRouter from "./routes/cart.routes.js"
 import coupansRouter from "./routes/coupon.routes.js"
 import paymentRouter from "./routes/payment.routes.js"
+import analyticsRouter from "./routes/analytics.routes.js"
 
 
 dotenv.config()
@@ -27,6 +28,7 @@ app.use('/api/products', productRouter)
 app.use('/api/cart', cartRouter)
 app.use('/api/coupans', coupansRouter)
 app.use('/api/payments', paymentRouter)
+app.use('/api/analytics', analyticsRouter)
 
 
 
