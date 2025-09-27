@@ -25,7 +25,7 @@ const LoginPage = () => {
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.8 }}
 			>
-				<h2 className='mt-6 text-center text-3xl font-extrabold text-emerald-400'>Create your account</h2>
+				<h2 className='mt-6 text-center text-3xl font-extrabold text-emerald-400'>Welcome back 😊 !!</h2>
 			</motion.div>
 
 			<motion.div
@@ -48,14 +48,15 @@ const LoginPage = () => {
 									id='email'
 									type='email'
 									required
+									autoComplete="off"
 									value={email}
 									onChange={(e) => setEmail(e.target.value)}
 									className=' block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 
 									rounded-md shadow-sm
-									 placeholder-gray-400 focus:outline-none focus:ring-emerald-500 
-									 focus:border-emerald-500 sm:text-sm'
+									placeholder-gray-400 focus:outline-none focus:ring-emerald-500 
+									focus:border-emerald-500 sm:text-sm'
 									placeholder='you@example.com'
-								/>
+									/>
 							</div>
 						</div>
 
@@ -71,6 +72,7 @@ const LoginPage = () => {
 									id='password'
 									type='password'
 									required
+									autoComplete="off"
 									value={password}
 									onChange={(e) => setPassword(e.target.value)}
 									className=' block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 
