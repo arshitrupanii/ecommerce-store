@@ -1,21 +1,24 @@
 import User from "../schema/user.schema.js";
 import jwt from "jsonwebtoken";
 import { redis } from "../lib/redis.js";
-import dotenv from "dotenv"
-
-dotenv.config()
 
 
 const generateTokens = (userId) => {
-    const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "15m",
-    });
+    try {
+        const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
+            expiresIn: "15m",
+        });
 
-    const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
-        expiresIn: "7d",
-    });
+        const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
+            expiresIn: "7d",
+        });
 
-    return { accessToken, refreshToken };
+        return { accessToken, refreshToken };
+
+    } catch (error) {
+        console.log("error in generate token : ", error)
+        return res.status(500).json({ message: "Something went wrong." })
+    }
 };
 
 const storeRefreshToken = async (userId, refreshToken) => {
@@ -23,6 +26,7 @@ const storeRefreshToken = async (userId, refreshToken) => {
         await redis.set(`refresh_token:${userId}`, refreshToken, { ex: 7 * 24 * 60 * 60 }); // 7days
     } catch (error) {
         console.log("error in store refresh token ", error)
+        return res.status(500).json({ message: "Something went wrong." })
     }
 };
 
@@ -44,20 +48,18 @@ const setCookies = (res, accessToken, refreshToken) => {
 
 
 // ok done
-export const loginController = async (req, res) => {
+export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({
-                message: "email and Password are required"
-            });
+            return res.status(400).json({ message: "email and Password are required" });
         }
 
         const user = await User.findOne({ email });
 
-        if(!user){
-            res.status(400).json({ message: "Invalid email Address" });
+        if (!user) {
+            return res.status(400).json({ message: "Invalid email Address" });
         }
 
         if (user && (await user.comparePassword(password))) {
@@ -65,7 +67,7 @@ export const loginController = async (req, res) => {
             await storeRefreshToken(user.id, refreshToken);
             setCookies(res, accessToken, refreshToken);
 
-            res.json({
+            return res.status(200).json({
                 _id: user.id,
                 name: user.name,
                 email: user.email,
@@ -74,50 +76,54 @@ export const loginController = async (req, res) => {
 
         }
         else {
-            res.status(400).json({ message: "Invalid password" });
+            return res.status(400).json({ message: "Invalid password" });
         }
 
     } catch (error) {
-        console.log("Error in login controller", error.message);
-        res.status(500).json({ message: error.message });
+        console.log("Error in login controller : ", error);
+        return res.status(500).json({ message: "Login failed" });
     }
 
 }
 
 // ok done
-export const signupController = async (req, res) => {
-    const { name, email, password } = req.body;
+export const signup = async (req, res) => {
+    try {
 
-    if (!name || !email || !password) {
-        return res.status(400).json({
-            success: false,
-            message: "All field are required"
+        const { name, email, password } = req.body;
+
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: "All field are required" });
+        }
+
+        const existingUser = await User.findOne({ email }).lean();
+
+        if (existingUser) {
+            return res.status(400).json({ message: "User already exist." })
+        }
+
+        const user = await User.create({ name, email, password })
+
+        const { accessToken, refreshToken } = generateTokens(user.id);
+        await storeRefreshToken(user.id, refreshToken);
+
+        setCookies(res, accessToken, refreshToken);
+
+        return res.status(201).json({
+            _id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
         });
-    }
-    
-    const existingUser = await User.findOne({ email });
-    
-    if (existingUser) {
-        return res.status(400).json({ message: "user is already exist..." })
-    }
-    
-    const user = await User.create({ name, email, password })
-    
-    const { accessToken, refreshToken } = generateTokens(user.id);
-    await storeRefreshToken(user.id, refreshToken);
 
-    setCookies(res, accessToken, refreshToken);
-
-    res.status(201).json({
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-    });
+    } catch (error) {
+        console.log("Error in signup controller : ", error);
+        return res.status(500).json({ message: "Signup failed" });
+    }
 }
 
 // ok done
-export const logoutController = async (req, res) => {
+export const logout = async (req, res) => {
     try {
 
         const refreshToken = req.cookies.refreshToken;
@@ -133,9 +139,8 @@ export const logoutController = async (req, res) => {
         res.status(200).json({ message: "logout successfully..." })
 
     } catch (error) {
-        console.log("Error in logout controller", error.message);
-        res.status(500).json({ message: "Server error", error: error.message });
-
+        console.log("Error in logout controller : ", error);
+        res.status(500).json({ message: "Logout failed" });
     }
 }
 
@@ -165,17 +170,18 @@ export const refreshToken = async (req, res) => {
             maxAge: 15 * 60 * 1000,
         });
 
-        res.json({ message: "Token refreshed successfully" });
+        return res.status(200).json({ message: "Token refreshed successfully" });
+
     } catch (error) {
-        console.log("Error in refreshToken controller", error.message);
-        res.status(500).json({ message: "Server error", error: error.message });
+        console.log("Error in refreshToken controller : ", error);
+        return res.status(500).json({ message: "Server error"});
     }
 };
 
 // ok done
 export const getProfile = async (req, res) => {
     try {
-        res.json(req.user);
+        res.status(200).json(req.user);
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
