@@ -26,10 +26,8 @@ export const getAnalyticsData = async (req, res) => {
             totalRevenue
         }
 
-
     } catch (error) {
-        console.log("error in get analytic data.");
-        return res.status(200).json({ message: "error in get analytic data.", error: error.message })
+        console.log("error in get analytic data : ", error);
     }
 }
 
@@ -68,7 +66,6 @@ export const getDailysaleDate = async (startDate, endDate) => {
 
     } catch (error) {
         console.log("error in get daily sale data.");
-        return res.status(200).json({ message: "error in get daily sale data.", error: error.message })
     }
 }
 

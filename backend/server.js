@@ -35,7 +35,6 @@ app.use('/api/payments', paymentRouter)
 app.use('/api/analytics', analyticsRouter)
 
 
-
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
     connectDB()

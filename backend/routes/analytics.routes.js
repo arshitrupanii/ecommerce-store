@@ -1,6 +1,6 @@
 import express from "express"
 import { adminRoute, protectRoute } from "../middleware/auth.middleware.js";
-import { getAnalyticsData } from "../controllers/analytics.controller.js";
+import { getAnalyticsData, getDailysaleDate } from "../controllers/analytics.controller.js";
 
 const router = express.Router()
 
@@ -14,14 +14,14 @@ router.get("/", protectRoute, adminRoute, async function (req, res) {
 
         const DailySalesData = await getDailysaleDate(startDate, endDate);
 
-        res.json({
+        return res.status(200).json({
             analyticsData,
             DailySalesData
         })
 
     } catch (error) {
-        console.log("error in get analytic data route.");
-        return res.status(200).json({ message: "error in get analytic data route.", error: error.message })
+        console.log("error in get analytic data route : ", error);
+        return res.status(500).json({ message: "Error in get analytic data." })
     }
 })
 
