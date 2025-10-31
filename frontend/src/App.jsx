@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Homepage from "./pages/Homepage.jsx";
 import Signuppage from "./pages/Signuppage.jsx";
 import Loginpage from "./pages/Loginpage.jsx";
@@ -6,17 +6,14 @@ import Navbar from "./components/Navbar.jsx";
 import { Toaster } from "react-hot-toast";
 import { useUserStore } from "./stores/useUsersStore.js";
 import { useEffect } from "react";
-import LoadingSpinner from "./components/LoadingSpinner.jsx"
+import LoadingSpinner from "./components/LoadingSpinner.jsx";
 
 function App() {
-	const { user, checkAuth, checkingAuth } = useUserStore();
-	// const { getCartItems } = useCartStore();
+  const { user, checkAuth, checkingAuth } = useUserStore();
 
-  console.log(user);
-
-	useEffect(() => {
-		checkAuth();
-	}, [checkAuth]);
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   if (checkingAuth) return <LoadingSpinner />;
 
@@ -33,10 +30,12 @@ function App() {
         <Navbar />
 
         <Routes>
-          <Route path="/" element={<Homepage />} />
-          <Route path="/signup" element={<Signuppage />} />
-          <Route path="/login" element={<Loginpage />} />
+          <Route path="/" element={user ? <Homepage /> : <Navigate to="/login" />} />
+          <Route path="/signup" element={!user ? <Signuppage /> : <Navigate to="/" />} />
+          <Route path="/login" element={!user ? <Loginpage /> : <Navigate to="/" />} />
         </Routes>
+
+
       </div>
 
       <Toaster />

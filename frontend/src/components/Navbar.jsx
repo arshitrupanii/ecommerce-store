@@ -6,9 +6,7 @@ import { useUserStore } from "../stores/useUsersStore";
 const Navbar = () => {
   const { user, logout } = useUserStore();
   const isAdmin = user?.role === "admin";
-  const { cart } = true;
-
-  console.log(user)
+  const { cart } = false;
 
   return (
     <header className="fixed top-0 left-0 w-full bg-gray-900 bg-opacity-90 backdrop-blur-md shadow-lg z-40 transition-all duration-300 border-b border-emerald-800">
@@ -22,14 +20,7 @@ const Navbar = () => {
           </Link>
 
           <nav className="flex flex-wrap items-center gap-4">
-            <Link
-              to={"/"}
-              className="text-gray-300 hover:text-emerald-400 transition duration-300
-					 ease-in-out"
-            >
-              Home
-            </Link>
-            {false && (
+            {cart && (
               <Link
                 to={"/cart"}
                 className="relative group text-gray-300 hover:text-emerald-400 transition duration-300 

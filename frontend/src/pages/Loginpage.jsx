@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { LogIn, Mail, Lock, ArrowRight, Loader } from "lucide-react";
 import { useUserStore } from "../stores/useUsersStore.js";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
 	const [email, setEmail] = useState("");
@@ -12,6 +13,10 @@ const LoginPage = () => {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
+		if(!email || !password){
+			toast.error("All field required");
+		}
+
 		login({email, password});
 	};
 
@@ -23,7 +28,7 @@ const LoginPage = () => {
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.8 }}
 			>
-				<h2 className='mt-6 text-center text-3xl font-extrabold text-emerald-400'>Welcome back 😊 !!</h2>
+				<h2 className='mt-6 text-center text-3xl font-extrabold text-emerald-400'>Login</h2>
 			</motion.div>
 
 			<motion.div
@@ -45,7 +50,6 @@ const LoginPage = () => {
 								<input
 									id='email'
 									type='email'
-									required
 									autoComplete="off"
 									value={email}
 									onChange={(e) => setEmail(e.target.value)}
@@ -69,7 +73,6 @@ const LoginPage = () => {
 								<input
 									id='password'
 									type='password'
-									required
 									autoComplete="off"
 									value={password}
 									onChange={(e) => setPassword(e.target.value)}
