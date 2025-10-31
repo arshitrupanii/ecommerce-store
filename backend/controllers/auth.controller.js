@@ -19,7 +19,11 @@ const generateTokens = (userId) => {
 };
 
 const storeRefreshToken = async (userId, refreshToken) => {
-    await redis.set(`refresh_token:${userId}`, refreshToken, { ex: 7 * 24 * 60 * 60 }); // 7days
+    try {
+        await redis.set(`refresh_token:${userId}`, refreshToken, { ex: 7 * 24 * 60 * 60 }); // 7days
+    } catch (error) {
+        console.log("error in store refresh token ", error)
+    }
 };
 
 const setCookies = (res, accessToken, refreshToken) => {
@@ -57,12 +61,12 @@ export const loginController = async (req, res) => {
         }
 
         if (user && (await user.comparePassword(password))) {
-            const { accessToken, refreshToken } = generateTokens(user._id);
-            await storeRefreshToken(user._id, refreshToken);
+            const { accessToken, refreshToken } = generateTokens(user.id);
+            await storeRefreshToken(user.id, refreshToken);
             setCookies(res, accessToken, refreshToken);
 
             res.json({
-                _id: user._id,
+                _id: user.id,
                 name: user.name,
                 email: user.email,
                 role: user.role,
@@ -70,7 +74,7 @@ export const loginController = async (req, res) => {
 
         }
         else {
-            res.status(400).json({ message: "Invalid email or password" });
+            res.status(400).json({ message: "Invalid password" });
         }
 
     } catch (error) {
@@ -87,25 +91,25 @@ export const signupController = async (req, res) => {
     if (!name || !email || !password) {
         return res.status(400).json({
             success: false,
-            message: "Name and email are required"
+            message: "All field are required"
         });
     }
-
+    
     const existingUser = await User.findOne({ email });
-
+    
     if (existingUser) {
-        return res.status(400).json({ message: "user is already create..." })
+        return res.status(400).json({ message: "user is already exist..." })
     }
-
+    
     const user = await User.create({ name, email, password })
-
-    const { accessToken, refreshToken } = generateTokens(user._id);
-    await storeRefreshToken(user._id, refreshToken);
+    
+    const { accessToken, refreshToken } = generateTokens(user.id);
+    await storeRefreshToken(user.id, refreshToken);
 
     setCookies(res, accessToken, refreshToken);
 
     res.status(201).json({
-        _id: user._id,
+        _id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -126,7 +130,7 @@ export const logoutController = async (req, res) => {
         res.clearCookie("accessToken")
         res.clearCookie("refreshToken")
 
-        res.json({ message: "logout successfully..." })
+        res.status(200).json({ message: "logout successfully..." })
 
     } catch (error) {
         console.log("Error in logout controller", error.message);
