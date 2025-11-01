@@ -181,8 +181,8 @@ export const refreshToken = async (req, res) => {
 // ok done
 export const getProfile = async (req, res) => {
     try {
-        res.status(200).json(req.user);
+        return res.status(200).json(req.user);
     } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
+        return res.status(500).json({ message: "Server error", error: error.message });
     }
 };

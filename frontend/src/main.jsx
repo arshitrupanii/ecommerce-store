@@ -4,23 +4,13 @@ import "./index.css";
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { HeroUIProvider } from "@heroui/react";
-import { lightTheme, darkTheme } from "../theme.config.js";
-
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <BrowserRouter>
-      <HeroUIProvider
-        defaultTheme="dark"
-        themes={{
-          light: lightTheme,
-          dark: darkTheme,
-        }}
-      >
-        <main className="text-foreground bg-background">
+    <HeroUIProvider>
+      <BrowserRouter>
           <App />
-        </main>
-      </HeroUIProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </HeroUIProvider>
   </StrictMode>
 );

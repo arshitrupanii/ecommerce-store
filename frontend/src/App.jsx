@@ -34,7 +34,8 @@ function App() {
       </div>
 
       <div className="relative z-50 pt-20">
-        <Navbar />
+        {/* <Navbar /> */}
+        <Navbar user={user} />
 
         <Routes>
           <Route
