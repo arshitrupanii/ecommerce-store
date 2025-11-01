@@ -7,13 +7,20 @@ import { Toaster } from "react-hot-toast";
 import { useUserStore } from "./stores/useUsersStore.js";
 import { useEffect } from "react";
 import LoadingSpinner from "./components/LoadingSpinner.jsx";
+import { useCartStrore } from "./stores/useCartStore.js";
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
+  const { getCartItems } = useCartStrore();
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  useEffect(() => {
+    if (!user) return;
+    getCartItems();
+  }, [getCartItems, user]);
 
   if (checkingAuth) return <LoadingSpinner />;
 
@@ -30,12 +37,19 @@ function App() {
         <Navbar />
 
         <Routes>
-          <Route path="/" element={user ? <Homepage /> : <Navigate to="/login" />} />
-          <Route path="/signup" element={!user ? <Signuppage /> : <Navigate to="/" />} />
-          <Route path="/login" element={!user ? <Loginpage /> : <Navigate to="/" />} />
+          <Route
+            path="/"
+            element={user ? <Homepage /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/signup"
+            element={!user ? <Signuppage /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/login"
+            element={!user ? <Loginpage /> : <Navigate to="/" />}
+          />
         </Routes>
-
-
       </div>
 
       <Toaster />
