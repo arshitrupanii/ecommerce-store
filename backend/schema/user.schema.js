@@ -39,10 +39,7 @@ const userSchema = new mongoose.Schema({
     {
         timestamps: true
     })
-
-
-
-
+    
 
 // pre save hook that hashed password before the save in db
 userSchema.pre("save", async function (next) {

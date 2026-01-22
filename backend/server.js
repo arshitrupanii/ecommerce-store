@@ -22,7 +22,7 @@ const port = process.env.PORT || 3000
 app.use(express.json({ limit: "10mb" })); // allows you to parse the body of the request
 app.use(cookieParser());
 app.use(cors({
-  origin: "http://localhost:5173", // your frontend
+  origin: [process.env.BASE_URL , "http://localhost:5173"], // your frontend
   credentials: true
 }))
 
@@ -35,7 +35,8 @@ app.use('/api/payments', paymentRouter)
 app.use('/api/analytics', analyticsRouter)
 
 
+
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-    connectDB()
+  console.log(`Example app listening on port ${port}`)
+  connectDB()
 })
