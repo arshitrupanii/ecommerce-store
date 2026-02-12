@@ -8,8 +8,8 @@ import rateLimit from "express-rate-limit";
 const router = Router()
 
 const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 5,
+    windowMs: 10 * 60 * 1000,
+    max: 10,
     message: {
         status: 429,
         message: "Too many authentication attempts. Please try again later."
