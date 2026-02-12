@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import connectDB from "./lib/db.js"
 import cookieParser from "cookie-parser"
 import cors from "cors"
+import helmet from "helmet";
 
 import authRouter from "./routes/auth.routes.js"
 import productRouter from "./routes/product.routes.js"
@@ -21,10 +22,12 @@ const port = process.env.PORT || 3000
 
 app.use(express.json({ limit: "10mb" })); // allows you to parse the body of the request
 app.use(cookieParser());
+app.use(helmet());
+
 app.use(cors({
   origin: [process.env.FRONTEND_URL],
   credentials: true
-}))
+}));
 
 
 app.use('/api/auth', authRouter)
